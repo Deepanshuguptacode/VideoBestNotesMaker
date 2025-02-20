@@ -1,0 +1,442 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TensorFlow Concepts</title>
+  <style>
+    body {
+      background-color: #1e1e1e; /* Dark Background */
+      color: #ffffff; /* White Text */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #ff4d4d; /* Red Main Heading */
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #ffffff;
+      font-size: 2em;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      color: #ffffff;
+      font-size: 1.6em;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+
+    strong {
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    pre {
+      background-color: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto; /* Enable horizontal scrolling for long code lines */
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9em;
+    }
+
+    code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9em;
+    }
+
+    .comment {
+      color: #6272a4; /* Gray-ish color for comments */
+    }
+
+    .keyword {
+      color: #ff79c6; /* Pink color for keywords */
+    }
+
+    .function {
+      color: #50fa7b; /* Green color for function names */
+    }
+
+    .variable {
+      color: #f1fa8c; /* Yellow color for variables */
+    }
+
+    .string {
+      color: #f8f8f2;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-bottom: 15px;
+    }
+
+    li {
+      font-size: 1.1em;
+      margin-bottom: 8px;
+    }
+
+    /* Custom scrollbar styling (optional) */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #44475a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6272a4;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #8be9fd;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <h1>🔥 TensorFlow Basics: Tensors, Reduction, and Axes 🚀</h1>
+
+  <h2>🔍 Let's start with the first block of code. 🔍</h2>
+
+  <h3>📌 1. Defining Tensors 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> A Tensor is the fundamental data unit in TensorFlow. Think of it as a multi-dimensional array. It can hold numbers, strings, or other data types. 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Imagine a spreadsheet. Each cell contains a value. A Tensor is like a more powerful spreadsheet that can have multiple sheets stacked on top of each other (more dimensions). A simple list of numbers is a 1-D tensor, a table is a 2-D tensor, and a stack of tables is a 3-D tensor. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="comment"># Creating a 2D Tensor (matrix)</span>
+<span class="variable">tf_data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>],
+                       [<span class="string">12</span>, <span class="string">14</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">18</span>, <span class="string">20</span>],
+                       [<span class="string">13</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">19</span>, <span class="string">21</span>],
+                       [<span class="string">14</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">18</span>, <span class="string">20</span>, <span class="string">22</span>]])
+<span class="function">print</span>(<span class="variable">tf_data</span>)
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>import tensorflow as tf</code>: Imports the TensorFlow library and gives it the alias <code>tf</code>.</li>
+    <li><code>tf.constant(...)</code>: Creates a constant Tensor. The values inside the square brackets <code>[...]</code> define the data in the Tensor. Constant Tensors cannot be changed after creation.</li>
+    <li>The square brackets create a 2D tensor.</li>
+  </ul>
+
+  <h3>📌 2. Reduction Operations (Sum, Mean) 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> Reduction operations take a Tensor and reduce its dimensionality by performing a calculation across its elements. Examples include sum, mean, max, min, etc. 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Imagine you have sales data for a store, organized by day and product. You might <em>reduce</em> this data by summing all sales for each day to get the total daily sales, or by averaging sales across all days to see average sales per product. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">tf_data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>],
+                       [<span class="string">12</span>, <span class="string">14</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">18</span>, <span class="string">20</span>],
+                       [<span class="string">13</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">19</span>, <span class="string">21</span>],
+                       [<span class="string">14</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">18</span>, <span class="string">20</span>, <span class="string">22</span>]])
+
+<span class="variable">sum</span> = <span class="variable">tf</span>.<span class="function">reduce_sum</span>(<span class="variable">tf_data</span>)
+<span class="function">print</span>(<span class="string">"Sum:"</span>, <span class="variable">sum</span>.<span class="function">numpy</span>())
+
+<span class="variable">mean</span> = <span class="variable">tf</span>.<span class="function">reduce_mean</span>(<span class="variable">tf_data</span>)
+<span class="function">print</span>(<span class="string">"Mean:"</span>, <span class="variable">mean</span>.<span class="function">numpy</span>())
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>tf.reduce_sum(tf_data)</code>: Calculates the sum of all elements in the <code>tf_data</code> Tensor.</li>
+    <li><code>tf.reduce_mean(tf_data)</code>: Calculates the average (mean) of all elements in the <code>tf_data</code> Tensor.</li>
+    <li><code>sum.numpy()</code> and <code>mean.numpy()</code>: Convert the TensorFlow Tensor to a NumPy array so that we can print the raw numerical value.</li>
+  </ul>
+
+  <h3>📌 3. The <code>axis</code> Parameter 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> The <code>axis</code> parameter in reduction operations specifies along which dimension the reduction should be performed. <code>axis=0</code> means "along the columns" (reducing rows), and <code>axis=1</code> means "along the rows" (reducing columns). 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Back to the spreadsheet example. If you want to calculate the <em>average sales per product</em>, you'd calculate the average <em>along the days (rows)</em> for each product <em>column</em>. If you want to calculate the <em>average sales per day</em>, you'd calculate the average <em>along the products (columns)</em> for each day <em>row</em>. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">tf_data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>],
+                       [<span class="string">12</span>, <span class="string">14</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">18</span>, <span class="string">20</span>],
+                       [<span class="string">13</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">19</span>, <span class="string">21</span>],
+                       [<span class="string">14</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">18</span>, <span class="string">20</span>, <span class="string">22</span>]])
+
+<span class="variable">mean_axis_0</span> = <span class="variable">tf</span>.<span class="function">reduce_mean</span>(<span class="variable">tf_data</span>, <span class="variable">axis</span>=<span class="string">0</span>)
+<span class="function">print</span>(<span class="string">"Mean along axis 0 (columns):"</span>, <span class="variable">mean_axis_0</span>.<span class="function">numpy</span>())
+
+<span class="variable">mean_axis_1</span> = <span class="variable">tf</span>.<span class="function">reduce_mean</span>(<span class="variable">tf_data</span>, <span class="variable">axis</span>=<span class="string">1</span>)
+<span class="function">print</span>(<span class="string">"Mean along axis 1 (rows):"</span>, <span class="variable">mean_axis_1</span>.<span class="function">numpy</span>())
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>tf.reduce_mean(tf_data, axis=0)</code>: Calculates the mean of each <em>column</em>. The result is a 1D Tensor, where each element is the mean of the corresponding column in <code>tf_data</code>.</li>
+    <li><code>tf.reduce_mean(tf_data, axis=1)</code>: Calculates the mean of each <em>row</em>. The result is a 1D Tensor, where each element is the mean of the corresponding row in <code>tf_data</code>.</li>
+  </ul>
+
+  <p><strong>Visual Representation:</strong></p>
+
+  <p>Imagine <code>tf_data</code> is this:</p>
+
+  <pre>
+    <code>
+[[1, 2, 3],
+ [4, 5, 6]]
+    </code>
+  </pre>
+
+  <ul>
+    <li><code>axis=0</code> (columns): Means you are collapsing the rows. You calculate the mean of <code>[1, 4]</code>, <code>[2, 5]</code>, and <code>[3, 6]</code>.</li>
+    <li><code>axis=1</code> (rows): Means you are collapsing the columns. You calculate the mean of <code>[1, 2, 3]</code> and <code>[4, 5, 6]</code>.</li>
+  </ul>
+
+  <h3>📌 4. The <code>keepdims</code> Parameter 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> The <code>keepdims</code> parameter, when set to <code>True</code>, keeps the original number of dimensions in the output Tensor, even after reduction. This is done by adding a dimension of size 1 in the reduced axis. 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Imagine you have a 2D table of sales data, and you calculate the average sales <em>per row</em> (<code>axis=1</code>). Without <code>keepdims</code>, you get a 1D array of average sales. With <code>keepdims=True</code>, you get a 2D array where each row has a single column containing the average sale for that row. The key here is that your original data had 2 dimensions, so <code>keepdims=True</code> forces your output to also have 2 dimensions. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">tf_data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>],
+                       [<span class="string">12</span>, <span class="string">14</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">18</span>, <span class="string">20</span>],
+                       [<span class="string">13</span>, <span class="string">15</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">19</span>, <span class="string">21</span>],
+                       [<span class="string">14</span>, <span class="string">16</span>, <span class="string">17</span>, <span class="string">18</span>, <span class="string">20</span>, <span class="string">22</span>]])
+
+<span class="variable">mean_axis_1_keepdims</span> = <span class="variable">tf</span>.<span class="function">reduce_mean</span>(<span class="variable">tf_data</span>, <span class="variable">axis</span>=<span class="string">1</span>, <span class="variable">keepdims</span>=<span class="keyword">True</span>)
+<span class="function">print</span>(<span class="string">"Mean along axis 1 (rows), keepdims=True:"</span>)
+<span class="function">print</span>(<span class="variable">mean_axis_1_keepdims</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Shape:"</span>, <span class="variable">mean_axis_1_keepdims</span>.<span class="variable">shape</span>)
+
+<span class="variable">mean_axis_1</span> = <span class="variable">tf</span>.<span class="function">reduce_mean</span>(<span class="variable">tf_data</span>, <span class="variable">axis</span>=<span class="string">1</span>)
+<span class="function">print</span>(<span class="string">"Mean along axis 1 (rows), keepdims=False:"</span>)
+<span class="function">print</span>(<span class="variable">mean_axis_1</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Shape:"</span>, <span class="variable">mean_axis_1</span>.<span class="variable">shape</span>)
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>tf.reduce_mean(tf_data, axis=1, keepdims=True)</code>: Calculates the mean of each row, but the output Tensor still has 2 dimensions. It will be a <code>(4, 1)</code> tensor.</li>
+    <li><code>tf.reduce_mean(tf_data, axis=1)</code>: Calculates the mean of each row, and the output Tensor has 1 dimension. It will be a <code>(4,)</code> tensor.</li>
+    <li><code>shape</code>: The <code>.shape</code> attribute of a Tensor tells you the size of each dimension. A shape of <code>(4, 1)</code> means 4 rows and 1 column. A shape of <code>(4,)</code> means a 1D array with 4 elements.</li>
+  </ul>
+
+  <p>💡 <strong>Impact:</strong> <code>keepdims=True</code> is often useful when you want to perform further calculations that require the dimensions of the input and output tensors to be compatible. Without <code>keepdims=True</code>, you might have to manually reshape the output tensor. 💡</p>
+
+  <h3>📝 Summary of Key Concepts (First Code Block) 📝</h3>
+
+  <ul>
+    <li><strong>Tensors:</strong> Multi-dimensional arrays that are the core data structure in TensorFlow. 🚀</li>
+    <li><strong>Reduction Operations:</strong> Functions like <code>tf.reduce_sum</code> and <code>tf.reduce_mean</code> that reduce the dimensionality of a Tensor by performing calculations across its elements. ➗</li>
+    <li><strong><code>axis</code> Parameter:</strong> Specifies the dimension along which a reduction operation is performed (0 for columns, 1 for rows, etc.). ⚙️</li>
+    <li><strong><code>keepdims</code> Parameter:</strong> Controls whether the original number of dimensions is preserved in the output of a reduction operation. 📏</li>
+  </ul>
+
+  <h2>🚀 Analysis for chunk_001.mp4 🎬</h2>
+
+  <h3>📌 1. Sorting Tensors 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> Arranging the elements of a tensor in a specific order (ascending or descending). 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Sorting a list of student scores from lowest to highest, or alphabetizing a list of names. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">5</span>, <span class="string">2</span>, <span class="string">8</span>, <span class="string">1</span>, <span class="string">9</span>, <span class="string">4</span>]])
+<span class="variable">sorted_data</span> = <span class="variable">tf</span>.<span class="function">sort</span>(<span class="variable">data</span>, <span class="variable">axis</span>=<span class="string">-1</span>)  <span class="comment"># axis=-1 sorts along the last axis</span>
+<span class="function">print</span>(<span class="string">"Original Data:"</span>, <span class="variable">data</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Sorted Data:"</span>, <span class="variable">sorted_data</span>.<span class="function">numpy</span>())
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>tf.sort(data, axis=-1)</code>: Sorts the <code>data</code> tensor along the last axis (<code>axis=-1</code>). For a 2D tensor, <code>axis=-1</code> is the same as <code>axis=1</code> (sorting each row).</li>
+    <li>The default sorting order is ascending.</li>
+  </ul>
+
+  <p>💡 <strong>Impact of <code>axis</code>:</strong> 💡</p>
+  <ul>
+    <li>If <code>data</code> is a 2D tensor:
+      <ul>
+        <li><code>axis=0</code>: Sorts each <em>column</em> independently.</li>
+        <li><code>axis=1</code> or <code>axis=-1</code>: Sorts each <em>row</em> independently.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>📌 2. Calculating the Median 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> The middle value in a sorted set of data. If there's an even number of elements, it's the average of the two middle values. 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Finding the "middle" salary in a company. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow - for odd number of elements):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>]])
+<span class="variable">sorted_data</span> = <span class="variable">tf</span>.<span class="function">sort</span>(<span class="variable">data</span>, <span class="variable">axis</span>=<span class="string">-1</span>)
+<span class="variable">median</span> = <span class="variable">sorted_data</span>[:, <span class="function">len</span>(<span class="variable">sorted_data</span>[<span class="string">0</span>]) // <span class="string">2</span>]  <span class="comment"># Integer division to find the middle index</span>
+<span class="function">print</span>(<span class="string">"Original Data:"</span>, <span class="variable">data</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Sorted Data:"</span>, <span class="variable">sorted_data</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Median:"</span>, <span class="variable">median</span>.<span class="function">numpy</span>())
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>sorted_data = tf.sort(data, axis=-1)</code>: Sorts the data along the last axis.</li>
+    <li><code>len(sorted_data[0]) // 2</code>: Finds the middle index of the sorted row (using integer division <code>//</code> to handle odd lengths).</li>
+    <li><code>sorted_data[:, ... ]</code> then retrieves the median.</li>
+    <li><strong>Important:</strong> This code only works correctly when the number of elements in the row is <em>odd</em>. For an <em>even</em> number of elements, you'd need to average the two middle elements.</li>
+  </ul>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow - for odd or even number of elements):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">data</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">3</span>, <span class="string">4</span>, <span class="string">5</span>, <span class="string">6</span>, <span class="string">7</span>]])
+<span class="variable">sorted_data</span> = <span class="variable">tf</span>.<span class="function">sort</span>(<span class="variable">data</span>, <span class="variable">axis</span>=<span class="string">-1</span>)
+<span class="variable">length</span> = <span class="function">len</span>(<span class="variable">sorted_data</span>[<span class="string">0</span>])
+<span class="keyword">if</span> <span class="variable">length</span> % <span class="string">2</span> == <span class="string">0</span>:  <span class="comment"># Even number of elements</span>
+    <span class="variable">mid1</span> = <span class="variable">sorted_data</span>[:, <span class="variable">length</span> // <span class="string">2</span> - <span class="string">1</span>]
+    <span class="variable">mid2</span> = <span class="variable">sorted_data</span>[:, <span class="variable">length</span> // <span class="string">2</span>]
+    <span class="variable">median</span> = (<span class="variable">mid1</span> + <span class="variable">mid2</span>) / <span class="string">2</span>
+<span class="keyword">else</span>:  <span class="comment"># Odd number of elements</span>
+    <span class="variable">median</span> = <span class="variable">sorted_data</span>[:, <span class="variable">length</span> // <span class="string">2</span>]
+
+<span class="function">print</span>(<span class="string">"Original Data:"</span>, <span class="variable">data</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Sorted Data:"</span>, <span class="variable">sorted_data</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Median:"</span>, <span class="variable">median</span>.<span class="function">numpy</span>())
+    </code>
+  </pre>
+
+  <h3>📌 3. Concatenating Tensors 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> Joining multiple tensors together to create a larger tensor. 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Combining two lists of customer names into a single list, or merging two tables with the same columns. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">tensor1</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">1</span>, <span class="string">2</span>, <span class="string">3</span>, <span class="string">4</span>]])
+<span class="variable">tensor2</span> = <span class="variable">tf</span>.<span class="function">constant</span>([[<span class="string">5</span>, <span class="string">6</span>, <span class="string">7</span>, <span class="string">8</span>]])
+<span class="variable">concatenated_tensor</span> = <span class="variable">tf</span>.<span class="function">concat</span>([<span class="variable">tensor1</span>, <span class="variable">tensor2</span>], <span class="variable">axis</span>=<span class="string">0</span>)  <span class="comment"># Concatenate along rows</span>
+<span class="function">print</span>(<span class="string">"Tensor 1:"</span>, <span class="variable">tensor1</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Tensor 2:"</span>, <span class="variable">tensor2</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Concatenated Tensor:"</span>, <span class="variable">concatenated_tensor</span>.<span class="function">numpy</span>())
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>tf.concat([tensor1, tensor2], axis=0)</code>: Concatenates <code>tensor1</code> and <code>tensor2</code> along <code>axis=0</code> (rows). This stacks <code>tensor2</code> <em>below</em> <code>tensor1</code>.</li>
+    <li><code>tf.concat([tensor1, tensor2], axis=1)</code>: Concatenates <code>tensor1</code> and <code>tensor2</code> along <code>axis=1</code> (columns). This places <code>tensor2</code> <em>to the right</em> of <code>tensor1</code>. In order for the tensors to be compatible, they have to have the same dimensions along all axis, except for the axis you are concatenating.</li>
+  </ul>
+
+  <p>💡 <strong>Impact of <code>axis</code>:</strong> 💡</p>
+  <ul>
+    <li><code>axis=0</code>: Concatenates along the rows (stacks vertically). The tensors must have the same number of columns.</li>
+    <li><code>axis=1</code>: Concatenates along the columns (joins horizontally). The tensors must have the same number of rows.</li>
+  </ul>
+
+  <h3>📌 4. Finding Maximum and Minimum Values and Indices 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> Identifying the largest and smallest values in a tensor, and finding their positions (indices). 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> Finding the highest and lowest scores on a test, and determining which students achieved those scores. 🎯</p>
+
+  <p>💻 <strong>Code Example (Python with TensorFlow):</strong> 💻</p>
+
+  <pre>
+    <code>
+<span class="keyword">import</span> <span class="variable">tensorflow</span> <span class="keyword">as</span> <span class="variable">tf</span>
+
+<span class="variable">tensor</span> = <span class="variable">tf</span>.<span class="function">constant</span>([<span class="string">12</span>, <span class="string">32</span>, <span class="string">2</span>, <span class="string">3232</span>, <span class="string">21</span>])
+<span class="variable">max_index</span> = <span class="variable">tf</span>.<span class="function">argmax</span>(<span class="variable">tensor</span>).<span class="function">numpy</span>()
+<span class="variable">min_index</span> = <span class="variable">tf</span>.<span class="function">argmin</span>(<span class="variable">tensor</span>).<span class="function">numpy</span>()
+<span class="variable">max_value</span> = <span class="variable">tf</span>.<span class="function">reduce_max</span>(<span class="variable">tensor</span>).<span class="function">numpy</span>()
+<span class="variable">min_value</span> = <span class="variable">tf</span>.<span class="function">reduce_min</span>(<span class="variable">tensor</span>).<span class="function">numpy</span>()
+
+<span class="function">print</span>(<span class="string">"Tensor:"</span>, <span class="variable">tensor</span>.<span class="function">numpy</span>())
+<span class="function">print</span>(<span class="string">"Index of Maximum Value:"</span>, <span class="variable">max_index</span>)
+<span class="function">print</span>(<span class="string">"Index of Minimum Value:"</span>, <span class="variable">min_index</span>)
+<span class="function">print</span>(<span class="string">"Maximum Value:"</span>, <span class="variable">max_value</span>)
+<span class="function">print</span>(<span class="string">"Minimum Value:"</span>, <span class="variable">min_value</span>)
+    </code>
+  </pre>
+
+  <p>📝 <strong>Explanation:</strong> 📝</p>
+  <ul>
+    <li><code>tf.argmax(tensor)</code>: Returns the <em>index</em> of the maximum value in the tensor.</li>
+    <li><code>tf.argmin(tensor)</code>: Returns the <em>index</em> of the minimum value in the tensor.</li>
+    <li><code>tf.reduce_max(tensor)</code>: Returns the maximum value in the tensor.</li>
+    <li><code>tf.reduce_min(tensor)</code>: Returns the minimum value in the tensor.</li>
+  </ul>
+
+  <p>💡 <strong>Impact of <code>axis</code>:</strong> 💡</p>
+  <ul>
+    <li>For multi-dimensional tensors, the <code>axis</code> parameter in <code>tf.argmax</code> and <code>tf.argmin</code> specifies the dimension along which to find the maximum or minimum index.</li>
+  </ul>
+
+  <h3>📌 5. Normalization 📌</h3>
+
+  <p>💡 <strong>Definition:</strong> Scaling data to a standard range (often 0 to 1 or -1 to 1). A common form of normalization involves subtracting the mean and dividing by the standard deviation (Z-score normalization). 💡</p>
+
+  <p>🎯 <strong>Real-Life Example:</strong> When building machine learning models, normalization prevents features with larger values from dominating features with smaller values. It helps the model learn more effectively. For instance, if you have income (ranging from $0 to millions) and age (ranging from 0 to 100), normalization will bring both features to a similar scale. 🎯</p>
+
+  <p>💻 <strong>
