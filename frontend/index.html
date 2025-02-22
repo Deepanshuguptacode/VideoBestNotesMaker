@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Maker</title>
+</head>
+<body>
+    <h2>Upload Video</h2>
+    <form id="uploadForm">
+        <input type="file" id="videoInput" accept="video/*">
+        <button type="button" onclick="uploadVideo()">Upload</button>
+    </form>
+    <p id="status"></p>
+    <progress id="progressBar" value="0" max="100" style="width: 100%;"></progress>
+    <h2>Generate Notes</h2>
+    <button onclick="generateNotes()">Generate Notes</button>
+    
+    <h2>Output</h2>
+    <div id="output"></div>
+
+    <script>
+        async function uploadVideo() {
+            const fileInput = document.getElementById('videoInput');
+            if (!fileInput.files.length) {
+                alert("Please select a video file.");
+                return;
+            }
+        
+            const file = fileInput.files[0];
+            const chunkSize = 5 * 1024 * 1024; // 5MB per chunk
+            const totalChunks = Math.ceil(file.size / chunkSize);
+            
+            document.getElementById("status").innerText = "Uploading...";
+            document.getElementById("progressBar").value = 0;
+
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * chunkSize;
+                const end = Math.min(start + chunkSize, file.size);
+                const chunk = file.slice(start, end);
+                
+                const formData = new FormData();
+                formData.append("videoChunk", chunk);
+                formData.append("chunkIndex", i);
+                formData.append("totalChunks", totalChunks);
+                formData.append("filename", file.name);
+
+                try {
+                    await fetch("http://localhost:3000/upload", {
+                        method: "POST",
+                        body: formData
+                    });
+                    document.getElementById("progressBar").value = ((i + 1) / totalChunks) * 100;
+                } catch (error) {
+                    document.getElementById("status").innerText = "Upload failed.";
+                    return;
+                }
+            }
+        }
+
+        function generateNotes() {
+            fetch('http://localhost:3000/notes/make')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('output').innerHTML = data;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+    
+</body>
+</html>

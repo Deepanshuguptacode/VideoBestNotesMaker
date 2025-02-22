@@ -38,7 +38,7 @@ const analyzeFile4 = async (filePath, apiKey, videoPrompt) => {
                     throw new Error(`Processing failed for file: ${filePath}`);
                 }
 
-                const model2 = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const model2 = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
                 const prompt = mimeType === "video/mp4"
                     ? `${videoPrompt}`
                     : "Describe this image in detail as if explaining to a visually impaired person. Include objects, background, and any visible text.";

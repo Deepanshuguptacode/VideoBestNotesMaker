@@ -23,7 +23,7 @@ const API_KEYS = [
 ];
 
 // Paths and configurations
-const chunkDuration = 1200; 
+const chunkDuration = 600; 
 const videoPrompt = `Write down detailed notes for this video, focusing on simplifying complex concepts for better understanding. Include clear definitions, structured explanations, and must all code snippets as presented. Arrange the content to make it feel like a teacher is walking the reader through each topic step by step.`;
 const videoAIPath = "./videoAI";
 const supportedVideoFormats = ["mp4", "mpeg", "mov", "avi", "x-flv", "mpg", "webm", "wmv", "3gpp"];
@@ -70,49 +70,30 @@ const makeVideoNotes = async (req, res, next) => {
         // Function to process video chunks concurrently
         const processVideoChunks = async (chunks, videoPrompt) => {
             const results = [];
-
             for (let i = 0; i < chunks.length; i += 4) {
                 try {
-                    // Process first chunk with first API key
-                    const firstChunkPromise = analyzeFile1(chunks[i], API_KEYS[0], videoPrompt);
-                    wait(10000);
-                    // Process second chunk with second API key (if exists)
-                    const secondChunkPromise = i + 1 < chunks.length
-                        ? analyzeFile2(chunks[i + 1], API_KEYS[1], videoPrompt)
-                        : null;
-                    wait(10000);
+                    const chunkPromises = [
+                        analyzeFile1(chunks[i], API_KEYS[0], videoPrompt),
+                        i + 1 < chunks.length ? analyzeFile2(chunks[i + 1], API_KEYS[1], videoPrompt) : null,
+                        i + 2 < chunks.length ? analyzeFile3(chunks[i + 2], API_KEYS[2], videoPrompt) : null,
+                        i + 3 < chunks.length ? analyzeFile4(chunks[i + 3], API_KEYS[3], videoPrompt) : null
+                    ].filter(Boolean);
 
-                    // Process third chunk with second API key (if exists)
-                    const thirdChunkPromise = i + 2 < chunks.length
-                        ? analyzeFile3(chunks[i + 2], API_KEYS[2], videoPrompt)
-                        : null;
-                    wait(10000);
+                    // Wait for all chunk analyses to complete
+                    const chunkResults = await Promise.all(chunkPromises);
 
-                    // Process fourth chunk with second API key (if exists)
-                    const fourthChunkPromise = i + 3 < chunks.length
-                        ? analyzeFile4(chunks[i + 3], API_KEYS[3], videoPrompt)
-                        : null;
-
-                    // Wait for both chunk analyses to complete
-                    const chunkResults = await Promise.all([
-                        firstChunkPromise,
-                        secondChunkPromise,
-                        thirdChunkPromise,
-                        fourthChunkPromise
-                    ].filter(Boolean));
-
-                    // Log results for each chunk
-                    chunkResults.forEach(result => {
-                        console.log(`Analysis for ${result.fileName}:`);
-                        console.log(result.analysis);
-                        console.log('---');
-                        results.push(result);
+                    // Use the resolved results to write files and delete chunks
+                    chunkResults.forEach((analysisResult, idx) => {
+                        fs.unlinkSync(chunks[i + idx]);
+                        console.log(`Deleted chunk: ${chunks[i + idx]}`);
+                        fs.writeFileSync(`analysis${i + idx}.txt`, analysisResult.analysis);
+                        console.log(`Wrote analysis to file: analysis${i + idx}.txt`);
+                        results.push(analysisResult);
                     });
                 } catch (error) {
                     console.error("Error processing chunk pair:", error);
                 }
             }
-
             return results;
         };
 
@@ -137,7 +118,10 @@ const makeVideoNotes = async (req, res, next) => {
 
                     if (supportedVideoFormats.includes(path.extname(file).toLowerCase().slice(1))) {
                         // Split video into chunks if needed
+                        console.log("Splitting video into chunks...");
+                        console.log("outputBaseDir", outputBaseDir);
                         const chunks = await splitVideo(file, outputBaseDir, chunkDuration);
+                        console.log("Chunks : ", chunks); 
                         // Process video chunks
                         const videoResults = await processVideoChunks(chunks, videoPrompt);
                         allResults.push(...videoResults);
@@ -161,7 +145,32 @@ const makeVideoNotes = async (req, res, next) => {
                 sharedState.allResultsString = allResultsString;
                 sharedState.videoNotesId = videoNotesId;
 
+                const VideoPath = fs.readdirSync("./videoAI");
+                let videoName=null
+                VideoPath.forEach(file => {
+                    if (path.extname(file) === ".mp4") {
+                        videoName = file;
+                    }
+                });
+                console.log(videoName);
+                let videoName1 = videoName.split(".")[0];
+                console.log(videoName1);
+                videoName1=videoName1+"_chunks";
+                console.log(videoName1);
+                console.log(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)
+                if(!(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)){
+                    const newChunks = chucks.map(path => fs.existsSync(path) ? path : null);
+                    console.log('Existing video paths:', newChunks);
+                    wait(30000);
+                    videoResults = await processVideoChunks(newChunks, videoPrompt);
+                }
+
                 console.log("All media processing completed.");
+                // const deleteVideoPath = "./videoAI";
+                // console.log(deleteVideoPath[1])
+                // fs.unlinkSync(`./videoAI/${deleteVideoPath[1]}`);
+                
+                
             } catch (error) {
                 console.error("Error during media processing:", error);
             }
@@ -169,13 +178,7 @@ const makeVideoNotes = async (req, res, next) => {
 
         // Start processing
         await processMediaFiles();
-        // allResultsString = "Here's a summary of the video.  A man, Prince Katiyar, conducts a live online quiz on deep learning.  He starts by reminding viewers they can find the videos for this session and others on the iNeuron Tech Hindi YouTube channel.  He then reviews how to find the relevant section on the iNeuron dashboard.  He answers questions from the viewers in the chat.  There's some discussion about the best way to answer questions and the process for getting a certificate upon completion of the course."
-        // videoNotesId = "67b5e3ec5b039ea0184f541d";
-
-        // // Update shared state
-        // sharedState.allResultsString = allResultsString;
-        // sharedState.videoNotesId = videoNotesId;
-
+        
         next();
 
     } catch (error) {

@@ -1,11 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const notesRoute = require('./routes/notesRoute');
+const uploadRoute = require('./routes/uploadRoute');
 const app = express();
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use('/upload',uploadRoute);
 app.use('/notes', notesRoute);
 // MongoDB Connection
 mongoose

@@ -49,7 +49,7 @@ const convertToHtml = async (req, res) => {
         betterNotesId: sharedState.betterNotesId
     });
     await htmlNotes.save();
-    res.status(201).json({ "message": "HTML created successfully" });
+    res.status(201).json({ codeBlock });
 }
 
 module.exports = convertToHtml;
