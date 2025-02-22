@@ -1,21 +1,18 @@
 const fs = require("fs");
 const path = require("path");
 
-// // console.log(__dirname)
-// // const uploadDir = path.join(__dirname, "..", "..", "videoAI");
-// // console.log(uploadDir)
-// // if (!fs.existsSync(uploadDir)) {
-// //     fs.mkdirSync(uploadDir, { recursive: true });
-// // }
-// // const files = fs.readdirSync("./videoAI")
-// // console.log(files[1])
-// // for (const file of files) {
-//     // }
-    
-// // fs.unlinkSync(path.join(uploadDir, files[1])); 
-// fs.writeFileSync("analysis"+1+".txt", firstChunkPromise);
-
-// fs.rmdirSync("./videoAI", { recursive: true });
-//         console.log("Deleted videoAI directory");
-const htmlPath = path.join(__dirname, "..", "..", "frontend");
-console.log(htmlPath)
+const VideoPath = fs.readdirSync("./videoAI");
+                let videoName=null
+                VideoPath.forEach(file => {
+                    if (path.extname(file) === ".mp4") {
+                        videoName = file;
+                    }
+                });
+                console.log(videoName);
+                //video chuck folder name
+                let videoName1 = videoName.split(".")[0];
+                console.log(videoName1);
+                videoName1=videoName1+"_chunks";
+                console.log(videoName1);
+                console.log(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)
+                console.log(fs.readdirSync(`./videoAI/processed/${videoName1}`))

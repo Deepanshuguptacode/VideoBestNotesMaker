@@ -30,7 +30,7 @@ const API_KEYS = [
 ];
 
 // Paths and configurations
-const chunkDuration = 305; 
+const chunkDuration =305; 
 const videoPrompt = `Write down detailed notes for this video, focusing on simplifying complex concepts for better understanding. Include clear definitions, structured explanations, and must all code snippets as presented. Arrange the content to make it feel like a teacher is walking the reader through each topic step by step.`;
 const videoAIPath = "./videoAI";
 const supportedVideoFormats = ["mp4", "mpeg", "mov", "avi", "x-flv", "mpg", "webm", "wmv", "3gpp"];
@@ -79,27 +79,58 @@ const makeVideoNotes = async (req, res, next) => {
             const results = [];
             for (let i = 0; i < chunks.length; i += 4) {
                 try {
-                    const chunkPromises = [
-                        analyzeFile1(chunks[i], API_KEYS[0], videoPrompt),
-                        i + 1 < chunks.length ? analyzeFile2(chunks[i + 1], API_KEYS[1], videoPrompt) : null,
-                        i + 2 < chunks.length ? analyzeFile3(chunks[i + 2], API_KEYS[2], videoPrompt) : null,
-                        i + 3 < chunks.length ? analyzeFile4(chunks[i + 3], API_KEYS[3], videoPrompt) : null
-                    ].filter(Boolean);
+                    const promiseObjects = [];
+            if (i < chunks.length) {
+                promiseObjects.push({
+                    index: i,
+                    promise: analyzeFile1(chunks[i], API_KEYS[0], videoPrompt)
+                });
+            }
+            if (i + 1 < chunks.length) {
+                promiseObjects.push({
+                    index: i + 1,
+                    promise: analyzeFile2(chunks[i + 1], API_KEYS[1], videoPrompt)
+                });
+            }
+            if (i + 2 < chunks.length) {
+                promiseObjects.push({
+                    index: i + 2,
+                    promise: analyzeFile3(chunks[i + 2], API_KEYS[2], videoPrompt)
+                });
+            }
+            if (i + 3 < chunks.length) {
+                promiseObjects.push({
+                    index: i + 3,
+                    promise: analyzeFile4(chunks[i + 3], API_KEYS[3], videoPrompt)
+                });
+            }
 
-                    // Wait for all chunk analyses to complete
-                    const chunkResults = await Promise.all(chunkPromises);
+            // Wait for all promises to settle.
+            const chunkResults = await Promise.allSettled(
+                promiseObjects.map(item => item.promise)
+            );
 
-                    // Use the resolved results to write files and delete chunks
-                    chunkResults.forEach((analysisResult, idx) => {
-                        fs.unlinkSync(chunks[i + idx]);
-                        console.log(`Deleted chunk: ${chunks[i + idx]}`);
-                        fs.writeFileSync(`analysis${i + idx}.txt`, analysisResult.analysis);
-                        console.log(`Wrote analysis to file: analysis${i + idx}.txt`);
-                        results.push(analysisResult);
-                    });
-                } catch (error) {
-                    console.error("Error processing chunk pair:", error);
+            // Process each result based on its status.
+            chunkResults.forEach((result, idx) => {
+                const chunkIndex = promiseObjects[idx].index;
+                if (result.status === "fulfilled") {
+                    // Successfully analyzed; delete the chunk and write the analysis to a file.
+                    fs.unlinkSync(chunks[chunkIndex]);
+                    console.log(`Deleted chunk: ${chunks[chunkIndex]}`);
+                    fs.writeFileSync(`analysis${chunkIndex}.txt`, result.value.analysis);
+                    console.log(`Wrote analysis to file: analysis${chunkIndex}.txt`);
+                    results.push(result.value);
+                } else {
+                    // Log error but continue processing other chunks.
+                    console.error(
+                        `Error processing chunk ${chunks[chunkIndex]}:`,
+                        result.reason
+                    );
                 }
+            });
+            } catch (error) {
+                console.error("Error processing chunk group:", error);
+            }
             }
             return results;
         };
@@ -153,11 +184,14 @@ const makeVideoNotes = async (req, res, next) => {
                 console.log(videoName1);
                 console.log(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)
                 //checking the folder is empty or not.If not then only process those video
-                if(!(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)){
-                    const newChunks = chucks.map(path => fs.existsSync(path) ? path : null);
-                    console.log('Existing video paths:', newChunks);
-                    wait(30000);
-                    videoResults = await processVideoChunks(newChunks, videoPrompt);
+                const processedFolder = `./videoAI/processed/${videoName1}`;
+                if(fs.readdirSync(processedFolder).length !== 0){
+                    const processedChunks = fs.readdirSync(processedFolder)
+                    .filter(file => file.startsWith("chunk_") && file.endsWith(".mp4"))
+                    .map(file => path.join(processedFolder, file));
+                    console.log('Existing video paths:', processedChunks);
+                    await wait(30000);
+                    videoResults = await processVideoChunks(processedChunks, videoPrompt);
                 }
 
                 console.log("All media processing completed.");
