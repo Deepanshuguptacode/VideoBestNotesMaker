@@ -20,53 +20,66 @@
     <div id="output"></div>
 
     <script>
-        async function uploadVideo() {
-            const fileInput = document.getElementById('videoInput');
-            if (!fileInput.files.length) {
-                alert("Please select a video file.");
-                return;
-            }
-        
-            const file = fileInput.files[0];
-            const chunkSize = 5 * 1024 * 1024; // 5MB per chunk
-            const totalChunks = Math.ceil(file.size / chunkSize);
-            
-            document.getElementById("status").innerText = "Uploading...";
-            document.getElementById("progressBar").value = 0;
-
-            for (let i = 0; i < totalChunks; i++) {
-                const start = i * chunkSize;
-                const end = Math.min(start + chunkSize, file.size);
-                const chunk = file.slice(start, end);
-                
-                const formData = new FormData();
-                formData.append("videoChunk", chunk);
-                formData.append("chunkIndex", i);
-                formData.append("totalChunks", totalChunks);
-                formData.append("filename", file.name);
-
-                try {
-                    await fetch("http://localhost:3000/upload", {
-                        method: "POST",
-                        body: formData
-                    });
-                    document.getElementById("progressBar").value = ((i + 1) / totalChunks) * 100;
-                } catch (error) {
-                    document.getElementById("status").innerText = "Upload failed.";
-                    return;
-                }
-            }
-        }
-
-        function generateNotes() {
-            fetch('http://localhost:3000/notes/make')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('output').innerHTML = data;
-                })
-                .catch(error => console.error('Error:', error));
-        }
-    </script>
+async function uploadVideo() {
+    const fileInput = document.getElementById('videoInput');
+    if (!fileInput.files.length) {
+        alert("Please select a video file.");
+        return;
+    }
     
+    const file = fileInput.files[0];
+    const chunkSize = 5 * 1024 * 1024; // 5MB per chunk
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    
+    document.getElementById("status").innerText = "Uploading...";
+    document.getElementById("progressBar").value = 0;
+
+    for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end);
+        
+        const formData = new FormData();
+        formData.append("videoChunk", chunk);
+        formData.append("chunkIndex", i);
+        formData.append("totalChunks", totalChunks);
+        formData.append("filename", file.name);
+
+        try {
+            await fetch("http://localhost:3000/upload", {
+                method: "POST",
+                body: formData
+            });
+            document.getElementById("progressBar").value = ((i + 1) / totalChunks) * 100;
+        } catch (error) {
+            document.getElementById("status").innerText = "Upload failed.";
+            return;
+        }
+    }
+}
+
+async function generateNotes() {
+    // Display a waiting loader/message
+    document.getElementById('output').innerHTML = '<p>Generating notes... Please wait.</p>';
+    const pollInterval = 3000; // 3 seconds
+
+    try {
+        let response;
+        do {
+            response = await fetch('http://localhost:3000/notes/make');
+            // If the response is not 201, wait a bit before polling again
+            if (response.status !== 201) {
+                await new Promise(resolve => setTimeout(resolve, pollInterval));
+            }
+        } while (response.status !== 201);
+        // Once a 201 status is received, redirect to notes.html
+        window.location.href = 'notes.html';
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('output').innerHTML = '<p>Error generating notes.</p>';
+    }
+}
+</script>
+         
 </body>
 </html>

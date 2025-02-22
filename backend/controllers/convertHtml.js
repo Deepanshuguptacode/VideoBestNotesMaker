@@ -49,7 +49,19 @@ const convertToHtml = async (req, res) => {
         betterNotesId: sharedState.betterNotesId
     });
     await htmlNotes.save();
+    createHtmlFile(codeBlock);
+    
     res.status(201).json({ codeBlock });
 }
 
+const createHtmlFile =async(codeBlock)=>{
+    const htmlPath = path.join(__dirname, "..", "..", "frontend");
+    if (!fs.existsSync(htmlPath)) {
+        fs.mkdirSync(htmlPath, { recursive: true });
+    }
+    const htmlFile = path.join(htmlPath, "notes.html");
+    fs.writeFileSync(htmlFile, codeBlock);
+    console.log("HTML file created successfully.");
+}
+    
 module.exports = convertToHtml;

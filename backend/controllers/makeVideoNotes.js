@@ -15,15 +15,22 @@ const analyzeFile4 = require("../utils/analysis4");
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
+// const API_KEYS = [
+//     "AIzaSyBQUFzjCgMixPE13Hz4h_XLDtu0Gj2NCeo", // Even key
+//     "AIzaSyAyb9Emp_CCLCSFbP0AXB17pSOtFU3DciI", // Odd key
+//     "AIzaSyBni_55HwsH-KRd9j8_XhK-PDRReUjtgdE",  // Even key
+//     "AIzaSyDgflhQJ2v0VxGCpDdbtP6wBiOX92oQgeg" // Odd key
+// ];
+
 const API_KEYS = [
     "AIzaSyBQUFzjCgMixPE13Hz4h_XLDtu0Gj2NCeo", // Even key
-    "AIzaSyAyb9Emp_CCLCSFbP0AXB17pSOtFU3DciI", // Odd key
-    "AIzaSyBni_55HwsH-KRd9j8_XhK-PDRReUjtgdE",  // Even key
+    null, // Odd key
+    null,  // Even key
     "AIzaSyDgflhQJ2v0VxGCpDdbtP6wBiOX92oQgeg" // Odd key
 ];
 
 // Paths and configurations
-const chunkDuration = 600; 
+const chunkDuration = 305; 
 const videoPrompt = `Write down detailed notes for this video, focusing on simplifying complex concepts for better understanding. Include clear definitions, structured explanations, and must all code snippets as presented. Arrange the content to make it feel like a teacher is walking the reader through each topic step by step.`;
 const videoAIPath = "./videoAI";
 const supportedVideoFormats = ["mp4", "mpeg", "mov", "avi", "x-flv", "mpg", "webm", "wmv", "3gpp"];
@@ -110,7 +117,6 @@ const makeVideoNotes = async (req, res, next) => {
 
                 const outputBaseDir = path.resolve(videoAIPath, "processed");
                 const allResults = [];
-                let allResultsString = ""; // Define allResultsString outside the loop
 
                 // Process each file
                 for (const file of files) {
@@ -128,23 +134,10 @@ const makeVideoNotes = async (req, res, next) => {
                     }
                 }
 
-                // Convert allResults into a single string
-                allResults.forEach((result) => {
-                    allResultsString += result.analysis;
-                });
-
-                const videoNote = new videoNotesModel({
-                    videoNotes: allResultsString
-                });
-                let videoNotesId = videoNote._id;
-
-                await videoNote.save();
                 // res.status(200).json({ message: "Video notes created successfully.", videoNotes: allResultsString });
 
                 // Update shared state
-                sharedState.allResultsString = allResultsString;
-                sharedState.videoNotesId = videoNotesId;
-
+                //finding the videoName
                 const VideoPath = fs.readdirSync("./videoAI");
                 let videoName=null
                 VideoPath.forEach(file => {
@@ -153,11 +146,13 @@ const makeVideoNotes = async (req, res, next) => {
                     }
                 });
                 console.log(videoName);
+                //video chuck folder name
                 let videoName1 = videoName.split(".")[0];
                 console.log(videoName1);
                 videoName1=videoName1+"_chunks";
                 console.log(videoName1);
                 console.log(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)
+                //checking the folder is empty or not.If not then only process those video
                 if(!(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)){
                     const newChunks = chucks.map(path => fs.existsSync(path) ? path : null);
                     console.log('Existing video paths:', newChunks);
