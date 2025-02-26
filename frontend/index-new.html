@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Maker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Notes Maker</h1>
+        <p>Upload a YouTube lecture video to generate notes</p>
+    </header>
+
+    <main>
+        <section class="upload-section">
+            <div class="upload-container">
+                <input type="text" id="youtube-url" placeholder="Enter YouTube Video URL">
+<!--Used uiverse.io here --> 
+<button> <span>Generate Notes</span>
+</button>
+            </div>
+        </section>
+
+        <section class="notes-section">
+            <h2>Generated Notes</h2>
+            <div id="notes-output" class="notes-output">
+                <!-- Notes will be displayed here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
