@@ -15,22 +15,22 @@ const analyzeFile4 = require("../utils/analysis4");
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
-// const API_KEYS = [
-//     "AIzaSyBQUFzjCgMixPE13Hz4h_XLDtu0Gj2NCeo", // Even key
-//     "AIzaSyAyb9Emp_CCLCSFbP0AXB17pSOtFU3DciI", // Odd key
-//     "AIzaSyBni_55HwsH-KRd9j8_XhK-PDRReUjtgdE",  // Even key
-//     "AIzaSyDgflhQJ2v0VxGCpDdbtP6wBiOX92oQgeg" // Odd key
-// ];
-
 const API_KEYS = [
     "AIzaSyBQUFzjCgMixPE13Hz4h_XLDtu0Gj2NCeo", // Even key
-    null, // Odd key
-    null,  // Even key
+    "AIzaSyAyb9Emp_CCLCSFbP0AXB17pSOtFU3DciI", // Odd key
+    "AIzaSyBni_55HwsH-KRd9j8_XhK-PDRReUjtgdE",  // Even key
     "AIzaSyDgflhQJ2v0VxGCpDdbtP6wBiOX92oQgeg" // Odd key
 ];
 
+// const API_KEYS = [
+//     "AIzaSyBQUFzjCgMixPE13Hz4h_XLDtu0Gj2NCeo", // Even key
+//     null,  // Even key
+//     "AIzaSyAyb9Emp_CCLCSFbP0AXB17pSOtFU3DciI", // Odd key
+//     "AIzaSyDgflhQJ2v0VxGCpDdbtP6wBiOX92oQgeg" // Odd key
+// ];
+
 // Paths and configurations
-const chunkDuration =305; 
+const chunkDuration =122; 
 const videoPrompt = `Write down detailed notes for this video, focusing on simplifying complex concepts for better understanding. Include clear definitions, structured explanations, and must all code snippets as presented. Arrange the content to make it feel like a teacher is walking the reader through each topic step by step.`;
 const videoAIPath = "./videoAI";
 const supportedVideoFormats = ["mp4", "mpeg", "mov", "avi", "x-flv", "mpg", "webm", "wmv", "3gpp"];
@@ -115,10 +115,14 @@ const makeVideoNotes = async (req, res, next) => {
                 const chunkIndex = promiseObjects[idx].index;
                 if (result.status === "fulfilled") {
                     // Successfully analyzed; delete the chunk and write the analysis to a file.
+                    console.log(`Processing chunk: ${chunks[chunkIndex]}`);
+                    const baseName = path.basename(chunks[chunkIndex], path.extname(chunks[chunkIndex]));
+                    const analysisIndex = baseName.split("_")[1];
+                    console.log("analysisIndex : ",analysisIndex);
                     fs.unlinkSync(chunks[chunkIndex]);
                     console.log(`Deleted chunk: ${chunks[chunkIndex]}`);
-                    fs.writeFileSync(`analysis${chunkIndex}.txt`, result.value.analysis);
-                    console.log(`Wrote analysis to file: analysis${chunkIndex}.txt`);
+                    fs.writeFileSync(`analysis${analysisIndex}.txt`, result.value.analysis);
+                    console.log(`Wrote analysis to file: analysis${analysisIndex}.txt`);
                     results.push(result.value);
                 } else {
                     // Log error but continue processing other chunks.
@@ -148,7 +152,7 @@ const makeVideoNotes = async (req, res, next) => {
 
                 const outputBaseDir = path.resolve(videoAIPath, "processed");
                 const allResults = [];
-
+                let chunks = [];
                 // Process each file
                 for (const file of files) {
                     console.log(`Processing file: ${path.basename(file)}`);
@@ -157,7 +161,7 @@ const makeVideoNotes = async (req, res, next) => {
                         // Split video into chunks if needed
                         console.log("Splitting video into chunks...");
                         console.log("outputBaseDir", outputBaseDir);
-                        const chunks = await splitVideo(file, outputBaseDir, chunkDuration);
+                        chunks = await splitVideo(file, outputBaseDir, chunkDuration);
                         console.log("Chunks : ", chunks); 
                         // Process video chunks
                         const videoResults = await processVideoChunks(chunks, videoPrompt);
@@ -183,15 +187,21 @@ const makeVideoNotes = async (req, res, next) => {
                 videoName1=videoName1+"_chunks";
                 console.log(videoName1);
                 console.log(fs.readdirSync(`./videoAI/processed/${videoName1}`).length === 0)
-                //checking the folder is empty or not.If not then only process those video
+                
+                console.log("chunks : ",chunks);
                 const processedFolder = `./videoAI/processed/${videoName1}`;
-                if(fs.readdirSync(processedFolder).length !== 0){
-                    const processedChunks = fs.readdirSync(processedFolder)
-                    .filter(file => file.startsWith("chunk_") && file.endsWith(".mp4"))
-                    .map(file => path.join(processedFolder, file));
-                    console.log('Existing video paths:', processedChunks);
-                    await wait(30000);
-                    videoResults = await processVideoChunks(processedChunks, videoPrompt);
+                if(!(fs.readdirSync(processedFolder).length === 0)){
+                    //copy all the existing chunks to the newChunks
+                    const newChunks = [];
+                    chunks.forEach(path => {
+                        if (fs.existsSync(path)) {
+                            newChunks.push(path);
+                        }
+                    });
+                    // const newChunks = chunks.map(path => fs.existsSync(path) ? path : null);
+                    console.log('Existing video paths:', newChunks);
+                    wait(30000);
+                    videoResults = await processVideoChunks(newChunks, videoPrompt);
                 }
 
                 console.log("All media processing completed.");

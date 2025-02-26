@@ -4,11 +4,11 @@ html
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weight Initialization & Batch Normalization</title>
+    <title>Deep Learning - Weight Initialization & Batch Normalization</title>
     <style>
         body {
-            background-color: #121212; /* Dark Theme */
-            color: #fff; /* White Font */
+            background-color: #121212;
+            color: #fff;
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
@@ -16,37 +16,42 @@ html
         }
 
         h1 {
-            color: #ff4500; /* Red Font */
+            color: #ff4500; /* Red-Orange */
             font-size: 2.5em;
-            margin-bottom: 20px;
+            margin-bottom: 0.5em;
         }
 
         h2 {
-            color: #fff; /* White Font */
+            color: #fff;
             font-size: 2em;
-            margin-top: 30px;
-            margin-bottom: 15px;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
         }
 
         h3 {
-            color: #fff; /* White Font */
+            color: #fff;
             font-size: 1.6em;
-            margin-top: 25px;
-            margin-bottom: 10px;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
         }
 
         p {
             font-size: 1.1em;
-            margin-bottom: 15px;
+            margin-bottom: 1em;
         }
 
-        strong {
-            font-weight: bold;
+        ul {
+            margin-bottom: 1em;
+        }
+
+        li {
+            font-size: 1.1em;
+            margin-bottom: 0.5em;
         }
 
         code {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+            background-color: #282c34;
+            color: #abb2bf;
             padding: 0.2em 0.4em;
             border-radius: 5px;
             font-family: 'Courier New', monospace;
@@ -54,8 +59,8 @@ html
         }
 
         pre {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+            background-color: #282c34;
+            color: #abb2bf;
             padding: 1em;
             border-radius: 5px;
             overflow-x: auto;
@@ -63,23 +68,27 @@ html
             font-size: 0.9em;
         }
 
-        pre code {
-            padding: 0;
-            background-color: transparent;
+        .keyword {
+            color: #c678dd; /* Purple */
         }
 
-        /* VS Code Syntax Highlighting (Simplified) */
-        .keyword { color: #569cd6; }
-        .function { color: #dcdcaa; }
-        .variable { color: #9cdcfe; }
-        .comment { color: #6a9955; }
-        .string { color: #ce9178; }
+        .function {
+            color: #61afef; /* Light Blue */
+        }
+
+        .variable {
+            color: #98c379; /* Green */
+        }
+
+        .comment {
+            color: #5c6370; /* Gray */
+            font-style: italic;
+        }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 1em;
         }
 
         th, td {
@@ -90,329 +99,279 @@ html
 
         th {
             background-color: #333;
-            color: #fff;
         }
     </style>
 </head>
 <body>
 
-    <h1>🚀 Weight Initialization & Batch Normalization Concepts</h1>
+    <h1>🚀 Mastering Weight Initialization and Batch Normalization in Deep Learning</h1>
 
-    <p>🚀 Okay, let's break down the concepts of weight initialization and batch normalization, as presented in the video, into simpler terms with real-life examples and code.</p>
+    <h2>🎯 Why This Matters: Faster, More Reliable Training</h2>
 
-    <h2>Part 1: Website Introduction & Code Snippets</h2>
+    <p>Deep learning models can be tricky to train. Weight initialization and batch normalization are two powerful techniques that help address common problems like:</p>
 
     <ul>
-        <li>📌 <strong>Website Focus:</strong> iNeuron focuses on tech education and career transitions.</li>
-        <li>💡 <strong>Key Metrics:</strong> High salary hikes, many courses, career transitions, and hiring partners.</li>
-        <li>🎯 <strong>Presenter's Aim:</strong> Demonstrate affordable, intuitive, and practical learning.</li>
-        <li>📝 <strong>Code Snippets:</strong></li>
+        <li>📌 <strong>Vanishing/Exploding Gradients:</strong> Gradients become too small (vanishing) or too large (exploding), hindering learning.</li>
+        <li>📌 <strong>Slow Convergence:</strong> The model takes a long time to reach an acceptable level of accuracy.</li>
+        <li>📌 <strong>Sensitivity to Hyperparameters:</strong> The model's performance is highly dependent on careful tuning of learning rates, etc.</li>
+        <li>📌 <strong>Internal Covariate Shift:</strong> The distribution of activations changes as data flows through the network, making it hard for subsequent layers to adapt.</li>
     </ul>
+
+    <h2>🚀 Part 1: Weight Initialization - Setting the Stage for Success</h2>
+
+    <h3>💡 The Problem with Bad Initializations</h3>
+
+    <ul>
+        <li>📌 <strong>All Zeros:</strong> All neurons learn the same thing, breaking symmetry.</li>
+        <li>📌 <strong>Small Random Values:</strong> Can lead to vanishing gradients (especially in deep networks). Think of it like a whisper that fades away as it travels down a long hallway.</li>
+        <li>📌 <strong>Large Random Values:</strong> Can lead to exploding gradients. Like shouting so loud that it overpowers everything.</li>
+    </ul>
+
+    <h3>🔍 The Solution: Smart Initialization Strategies</h3>
+
+    <p>We need to initialize weights in a way that keeps the variance of activations and gradients reasonable throughout the network.</p>
+
+    <h4>📝 1. Xavier/Glorot Initialization</h4>
+
+    <ul>
+        <li>📌 <strong>Definition:</strong> A weight initialization technique designed to keep the variance of activations and gradients consistent across layers.</li>
+        <li>📌 <strong>Suitable For:</strong> Layers with <strong>sigmoid</strong> or <strong>tanh</strong> activation functions.</li>
+        <li>📌 <strong>Why It Works:</strong> Sigmoid and tanh have a limited range (-1 to 1). Xavier helps prevent saturation.</li>
+        <li>📌 <strong>Formula:</strong>
+            <ul>
+                <li><em>Uniform Distribution:</em> Weights are sampled from a uniform distribution between <code>[-limit, limit]</code>, where <code>limit = sqrt(6 / (fan_in + fan_out))</code></li>
+                <li><em>Normal Distribution:</em> Weights are sampled from a normal distribution with mean 0 and standard deviation <code>sqrt(2 / (fan_in + fan_out))</code></li>
+                <li><code>fan_in</code>: Number of inputs to the layer</li>
+                <li><code>fan_out</code>: Number of outputs from the layer</li>
+            </ul>
+        </li>
+        <li>🎯 <strong>Analogy:</strong> Imagine tuning a radio. Xavier initialization tries to balance the signal strength coming in and going out so you get a clear sound.</li>
+    </ul>
+
+    <h4>📝 2. He Initialization</h4>
+
+    <ul>
+        <li>📌 <strong>Definition:</strong> Specifically designed for layers using <strong>ReLU</strong> (Rectified Linear Unit) or its variants (Leaky ReLU, Parametric ReLU).</li>
+        <li>📌 <strong>Suitable For:</strong> Layers with ReLU activations.</li>
+        <li>📌 <strong>Why It Works:</strong> ReLU sets negative values to zero, which can reduce the variance. He initialization compensates for this.</li>
+        <li>📌 <strong>Formula:</strong>
+            <ul>
+                <li><em>Uniform Distribution:</em> Weights are sampled from a uniform distribution between <code>[-limit, limit]</code>, where <code>limit = sqrt(6 / fan_in)</code></li>
+                <li><em>Normal Distribution:</em> Weights are sampled from a normal distribution with mean 0 and standard deviation <code>sqrt(2 / fan_in)</code></li>
+                <li><code>fan_in</code>: Number of inputs to the layer</li>
+            </ul>
+        </li>
+        <li>🎯 <strong>Analogy:</strong> Think of a garden hose that sometimes gets kinked. He initialization is like making the hose a bit wider so that even when it's kinked, enough water still flows through.</li>
+        <li>📌 <strong>Problem with ReLU activations:</strong> This issue is referred to as “dying ReLU”</li>
+        <li>📌 <strong>Choosing a Value</strong> * He Initialization ->  sqrt(2/n)</li>
+    </ul>
+
+    <h4>🚀 Code Example (Keras - He Initialization)</h4>
 
     <pre>
         <code>
-&lt;Affordable&gt;
-&lt;Intuitive&gt;
-&lt;Practical&gt;
+<span class="keyword">import</span> <span class="variable">numpy</span> <span class="keyword">as</span> <span class="variable">np</span>
+<span class="keyword">import</span> <span class="variable">keras</span>
+<span class="keyword">from</span> <span class="variable">keras.models</span> <span class="keyword">import</span> <span class="variable">Sequential</span>
+<span class="keyword">from</span> <span class="variable">keras.layers</span> <span class="keyword">import</span> <span class="variable">Dense</span>
+<span class="keyword">from</span> <span class="variable">keras.initializers</span> <span class="keyword">import</span> <span class="variable">he_normal</span>
+<span class="keyword">from</span> <span class="variable">keras.utils</span> <span class="keyword">import</span> <span class="variable">to_categorical</span>
+<span class="keyword">import</span> <span class="variable">matplotlib.pyplot</span> <span class="keyword">as</span> <span class="variable">plt</span>
+
+<span class="comment"># 1. Data Preparation:  Generating Random Data</span>
+<span class="variable">num_samples</span> = <span class="number">1000</span>
+<span class="variable">input_dim</span> = <span class="number">784</span>
+<span class="variable">num_classes</span> = <span class="number">10</span>
+
+<span class="comment"># Generating random data for demonstration purposes</span>
+<span class="variable">x_train</span> = <span class="variable">np</span>.<span class="function">random.rand</span>(<span class="variable">num_samples</span>, <span class="variable">input_dim</span>) <span class="comment">#Input data with random values</span>
+<span class="variable">y_train</span> = <span class="variable">to_categorical</span>(<span class="variable">np</span>.<span class="function">random.randint</span>(<span class="variable">num_classes</span>, <span class="keyword">size</span>=(<span class="variable">num_samples</span>,))) <span class="comment"># One-hot encode random labels</span>
+
+<span class="comment"># 2. Building the Model with He Initialization</span>
+<span class="variable">model_with_he</span> = <span class="variable">Sequential</span>()
+<span class="variable">model_with_he</span>.<span class="function">add</span>(<span class="variable">Dense</span>(<span class="number">128</span>, <span class="keyword">input_dim</span>=<span class="variable">input_dim</span>, <span class="keyword">activation</span>=<span class="string">'relu'</span>, <span class="keyword">kernel_initializer</span>=<span class="variable">he_normal</span>()))
+<span class="variable">model_with_he</span>.<span class="function">add</span>(<span class="variable">Dense</span>(<span class="number">64</span>, <span class="keyword">activation</span>=<span class="string">'relu'</span>, <span class="keyword">kernel_initializer</span>=<span class="variable">he_normal</span>()))
+<span class="variable">model_with_he</span>.<span class="function">add</span>(<span class="variable">Dense</span>(<span class="variable">num_classes</span>, <span class="keyword">activation</span>=<span class="string">'softmax'</span>, <span class="keyword">kernel_initializer</span>=<span class="variable">he_normal</span>()))
+
+<span class="comment"># 3. Compiling the Model</span>
+<span class="variable">model_with_he</span>.<span class="function">compile</span>(<span class="keyword">loss</span>=<span class="string">'categorical_crossentropy'</span>, <span class="keyword">optimizer</span>=<span class="string">'adam'</span>, <span class="keyword">metrics</span>=[<span class="string">'accuracy'</span>])
+
+<span class="comment"># 4. Model Summary</span>
+<span class="variable">model_with_he</span>.<span class="function">summary</span>()
+
+<span class="comment"># 5. Training the Model</span>
+<span class="variable">history_he</span> = <span class="variable">model_with_he</span>.<span class="function">fit</span>(<span class="variable">x_train</span>, <span class="variable">y_train</span>, <span class="keyword">epochs</span>=<span class="number">10</span>, <span class="keyword">batch_size</span>=<span class="number">32</span>, <span class="keyword">validation_split</span>=<span class="number">0.2</span>, <span class="keyword">verbose</span>=<span class="number">0</span>)
+
+<span class="comment"># 6. Plotting the Loss</span>
+<span class="variable">plt</span>.<span class="function">plot</span>(<span class="variable">history_he</span>.<span class="variable">history</span>[<span class="string">'loss'</span>], <span class="keyword">label</span>=<span class="string">'He Initialization'</span>)
+<span class="variable">plt</span>.<span class="function">plot</span>(<span class="variable">history_he</span>.<span class="variable">history</span>[<span class="string">'val_loss'</span>], <span class="keyword">label</span> = <span class="string">'Validation He Initialization'</span>)
+<span class="variable">plt</span>.<span class="function">xlabel</span>(<span class="string">'Epoch'</span>)
+<span class="variable">plt</span>.<span class="function">ylabel</span>(<span class="string">'Loss'</span>)
+<span class="variable">plt</span>.<span class="function">title</span>(<span class="string">'Training Loss with He Initialization'</span>)
+<span class="variable">plt</span>.<span class="function">legend</span>()
+<span class="variable">plt</span>.<span class="function">show</span>()
         </code>
     </pre>
 
-    <p>🔍 This HTML snippet highlights how the presenter emphasizes the key features of the website – affordability, intuitiveness, and practicality – by literally using those words within the code. It showcases a direct integration of design with messaging.</p>
-
-    <h2>Part 2: The Main Topics: Weight Initialization and Batch Normalization</h2>
-
-    <p>The video focuses on two crucial techniques in neural networks:</p>
-
-    <ol>
-        <li><strong>Weight Initialization:</strong> How to set the initial values of the weights in your neural network.</li>
-        <li><strong>Batch Normalization:</strong> A technique to stabilize learning by normalizing the input to each layer.</li>
-    </ol>
-
-    <h3>Why These Topics Matter?</h3>
-
-    <p>🎯 Think of training a neural network like sculpting a statue.</p>
-
     <ul>
-        <li>📌 <strong>Weight Initialization:</strong> Is like starting with a rough block of marble. The initial shape matters. If your starting block is too lopsided or uneven, it will be difficult to sculpt a beautiful statue. The right initialization helps you start in a better position, allowing the network to learn faster and avoid getting stuck.</li>
-        <li>📌 <strong>Batch Normalization:</strong> Is like providing consistent lighting while you are sculpting. If the lighting changes constantly, it's hard to see the details and make accurate adjustments. Batch normalization ensures that the input to each layer has a similar distribution, making the learning process more stable and efficient.</li>
-    </ul>
-
-    <h2>Part 3: Weight Initialization in Detail</h2>
-
-    <h3>What is Weight Initialization?</h3>
-
-    <ul>
-        <li>🔍 <strong>Definition:</strong> Weight initialization is the process of assigning initial values to the weights in a neural network before training.</li>
-        <li>💡 <strong>Why is it Important?</strong> Proper weight initialization helps prevent issues like:
+        <li>📌 <strong>Explanation:</strong>
             <ul>
-                <li>Vanishing Gradients: Gradients become very small, hindering learning in early layers.</li>
-                <li>Exploding Gradients: Gradients become very large, causing unstable training.</li>
-                <li>Slow Convergence: The model takes a very long time to learn.</li>
+                <li><code>kernel_initializer=he_normal()</code>: Specifies that the weights of the <code>Dense</code> layer should be initialized using the He initialization method with a normal distribution. <code>he_uniform()</code> is also available for the uniform distribution.</li>
+                <li><code>plt.plot(history_he.history['val_loss'], label = 'Validation He Initialization')</code>: used to evaluate the training of your model and if it will work when real data is introduced.</li>
             </ul>
         </li>
     </ul>
 
-    <h3>Weight Initialization Techniques</h3>
-
-    <p>The presenter focuses on two main techniques: Xavier (Glorot) Initialization and He Initialization.</p>
-
-    <h4>1. Xavier (Glorot) Initialization</h4>
-
-    <ul>
-        <li>🔍 <strong>Definition:</strong> Xavier initialization aims to maintain the variance of activations and gradients across layers. It's designed to keep the signals flowing nicely through the network.</li>
-        <li>🎯 <strong>Real-Life Example:</strong> Imagine a chain of people passing buckets of water. Xavier initialization tries to ensure that each person passes the bucket with roughly the same amount of water they received, preventing the water from disappearing (vanishing gradient) or overflowing (exploding gradient).</li>
-        <li>💡 <strong>Suitable Activation Functions:</strong> Typically used with sigmoid or tanh activation functions.</li>
-    </ul>
-
-    <ul>
-        <li>📝 <strong>Key Points:</strong>
-            <ul>
-                <li>Calculates the initial weights based on the number of inputs and outputs for each layer.</li>
-                <li>Can use uniform or normal distributions.</li>
-                <li>The goal is to prevent the signal from shrinking or exploding as it passes through the layers.</li>
-            </ul>
-        </li>
-    </ul>
-
-    <h4>2. He Initialization</h4>
-
-    <ul>
-        <li>🔍 <strong>Definition:</strong> He initialization is specifically designed for layers using ReLU (Rectified Linear Unit) activation functions.</li>
-        <li>🎯 <strong>Real-Life Example:</strong> Imagine a row of light switches. ReLU is like a switch that's either on or off. If the initial input to a ReLU layer is too negative, the neuron will always be off ("dying ReLU problem"). He initialization helps ensure that enough neurons are initially active, allowing the network to learn effectively.</li>
-        <li>💡 <strong>Suitable Activation Functions:</strong> ReLU and its variants (Leaky ReLU, Parametric ReLU).</li>
-    </ul>
-
-    <ul>
-        <li>📝 <strong>Key Points:</strong>
-            <ul>
-                <li>Calculates the initial weights based on the number of inputs to the layer.</li>
-                <li>Helps prevent the "dying ReLU" problem.</li>
-                <li>Similar to Xavier, it maintains variance, but it's tailored for ReLU activations.</li>
-            </ul>
-        </li>
-    </ul>
-
-    <h3>Visual Summary of Weight Initialization</h3>
+    <h3>💡 Choosing Between Xavier and He</h3>
 
     <table>
         <thead>
             <tr>
-                <th>Technique</th>
-                <th>Activation Function</th>
-                <th>Goal</th>
+                <th>Feature</th>
+                <th>Xavier Initialization</th>
+                <th>He Initialization</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>Xavier (Glorot)</td>
+                <td>Activation</td>
                 <td>Sigmoid, Tanh</td>
-                <td>Maintain variance of activations and gradients</td>
+                <td>ReLU, Leaky ReLU, Parametric ReLU</td>
             </tr>
             <tr>
-                <td>He</td>
-                <td>ReLU, Leaky ReLU</td>
-                <td>Prevent "dying ReLU" and maintain variance with ReLU activations</td>
+                <td>Goal</td>
+                <td>Balance variance for saturating activations</td>
+                <td>Compensate for ReLU's zeroing of neg. values</td>
+            </tr>
+            <tr>
+                <td>Impact</td>
+                <td>Prevents vanishing/exploding in shallower nets</td>
+                <td>Better convergence for deeper ReLU networks</td>
             </tr>
         </tbody>
     </table>
 
-    <h3>Why Not Zero Initialization?</h3>
+    <h2>🚀 Part 2: Batch Normalization - Stabilizing the Learning Process</h2>
 
-    <p>The presenter mentions the importance of NOT initializing all weights to zero.</p>
+    <h3>💡 The Problem: Internal Covariate Shift</h3>
 
     <ul>
-        <li>💡 <strong>Problem:</strong> If all weights are zero, all neurons in a layer will learn the same thing. This breaks the symmetry, preventing the network from learning complex patterns.</li>
-        <li>🎯 <strong>Real-Life Example:</strong> Imagine a team of students working on the same problem, but all of them are doing the exact same calculations. They will all come to the same conclusion, no matter how complex the problem is. Random initialization ensures each neuron learns something different.</li>
+        <li>📌 <strong>Definition:</strong> The change in the distribution of network activations as the parameters change during training. Each layer is constantly trying to adapt to a moving target.</li>
+        <li>🎯 <strong>Analogy:</strong> Imagine trying to hit a target that's constantly moving randomly. It's much harder than hitting a stationary target.</li>
+        <li>📌 <em>Internal Covariate Shift Definition</em> : The distribution of data through different layers changes as the weights and biases at each layer change.</li>
+        <li>📌 <em>Why it is Needed?:</em> In a deep neural network, each layer initializes weights randomly or gets adjusted during training. These changes alter the distribution of data as it flows through the network. If there is covariant shift, it becomes harder for subsequent layers to learn.</li>
     </ul>
 
-    <h2>Part 4: Code Example in Python (with Keras/TensorFlow)</h2>
-
-    <p>The presenter provides code using TensorFlow and Keras. Let's break it down:</p>
-
-    <pre>
-        <code class="language-python">
-<span class="keyword">import</span> numpy <span class="keyword">as</span> np
-<span class="keyword">from</span> tensorflow <span class="keyword">import</span> keras
-<span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense, BatchNormalization, Activation
-<span class="keyword">from</span> keras.optimizers <span class="keyword">import</span> Adam
-<span class="keyword">from</span> keras.utils <span class="keyword">import</span> to_categorical
-
-<span class="comment"># Example dummy data for demonstration purposes</span>
-x_train = np.random.rand(<span class="number">1000</span>, <span class="number">784</span>)  <span class="comment"># 1000 samples, each with 784 features</span>
-y_train = to_categorical(np.random.randint(<span class="number">0</span>, <span class="number">10</span>, <span class="number">1000</span>), num_classes=<span class="number">10</span>)  <span class="comment"># 1000 samples, each with 10 classes</span>
-
-model = keras.Sequential([
-    Dense(units=<span class="number">128</span>, input_shape=(<span class="number">784</span>,)),
-    BatchNormalization(),
-    Activation(<span class="string">'relu'</span>),
-    Dense(units=<span class="number">64</span>),
-    BatchNormalization(),
-    Activation(<span class="string">'relu'</span>),
-    Dense(units=<span class="number">10</span>),
-    Activation(<span class="string">'softmax'</span>)
-])
-
-model.compile(optimizer=<span class="string">'Adam'</span>, loss=<span class="string">'categorical_crossentropy'</span>, metrics=[<span class="string">'accuracy'</span>])
-model.fit(x_train, y_train, epochs=<span class="number">5</span>, batch_size=<span class="number">32</span>)
-        </code>
-    </pre>
-
-    <p>🔍 <strong>Explanation:</strong></p>
-
-    <ol>
-        <li><strong>Imports:</strong>
-            <ul>
-                <li><code>import numpy as np</code>: Imports the NumPy library for numerical operations.</li>
-                <li><code>from tensorflow import keras</code>: Imports the Keras API from TensorFlow.</li>
-                <li><code>from keras.layers import Dense, BatchNormalization, Activation</code>: Imports specific layers from Keras.</li>
-                <li><code>from keras.optimizers import Adam</code>: Imports the Adam optimizer.</li>
-                <li><code>from keras.utils import to_categorical</code>: Imports a utility function to convert class vectors to binary class matrices.</li>
-            </ul>
-        </li>
-        <li><strong>Dummy Data:</strong>
-            <ul>
-                <li><code>x_train = np.random.rand(1000, 784)</code>: Creates random input data with 1000 samples, each having 784 features. This simulates a dataset like MNIST (handwritten digits), where each image is 28x28 pixels (28*28 = 784).</li>
-                <li><code>y_train = to_categorical(np.random.randint(0, 10, 1000), num_classes=10)</code>: Creates random output data with 1000 samples and 10 classes (0-9). <code>to_categorical</code> converts the integer labels into one-hot encoded vectors (e.g., 3 becomes [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]).</li>
-            </ul>
-        </li>
-        <li><strong>Model Definition:</strong>
-            <ul>
-                <li><code>model = keras.Sequential([...])</code>: Defines a sequential model, which means layers are stacked one after the other.</li>
-                <li><code>Dense(units=128, input_shape=(784,))</code>: A densely connected layer with 128 neurons and an input shape of 784.</li>
-                <li><code>BatchNormalization()</code>: A batch normalization layer (explained below).</li>
-                <li><code>Activation('relu')</code>: Applies the ReLU activation function.</li>
-                <li><code>Dense(units=64)</code>: Another densely connected layer with 64 neurons.</li>
-                <li><code>BatchNormalization()</code>: Another batch normalization layer.</li>
-                <li><code>Activation('relu')</code>: Applies the ReLU activation function.</li>
-                <li><code>Dense(units=10)</code>: The output layer with 10 neurons (one for each class).</li>
-                <li><code>Activation('softmax')</code>: Applies the softmax activation function, which outputs a probability distribution over the 10 classes.</li>
-            </ul>
-        </li>
-        <li><strong>Model Compilation:</strong>
-            <ul>
-                <li><code>model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])</code>: Configures the model for training.
-                    <ul>
-                        <li><code>optimizer='Adam'</code>: Uses the Adam optimizer (a popular optimization algorithm).</li>
-                        <li><code>loss='categorical_crossentropy'</code>: Uses categorical cross-entropy as the loss function (suitable for multi-class classification).</li>
-                        <li><code>metrics=['accuracy']</code>: Tracks the accuracy during training.</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-        <li><strong>Model Training:</strong>
-            <ul>
-                <li><code>model.fit(x_train, y_train, epochs=5, batch_size=32)</code>: Trains the model.
-                    <ul>
-                        <li><code>x_train</code>, <code>y_train</code>: Training data.</li>
-                        <li><code>epochs=5</code>: The number of times the model will iterate over the entire training dataset.</li>
-                        <li><code>batch_size=32</code>: The number of samples used in each update of the model's weights.</li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ol>
-
-    <h3>How to Specify Weight Initialization</h3>
-
-    <p>While the code <em>doesn't explicitly specify</em> the weight initialization, Keras uses default initializers (Glorot/Xavier for layers with sigmoid/tanh and He for layers with ReLU) if you don't specify them.</p>
-
-    <p>To explicitly control the weight initialization, you can pass an <code>initializer</code> argument to the <code>Dense</code> layer:</p>
-
-    <pre>
-        <code class="language-python">
-<span class="keyword">from</span> keras.initializers <span class="keyword">import</span> glorot_uniform, he_normal
-
-model = keras.Sequential([
-    Dense(units=<span class="number">128</span>, input_shape=(<span class="number">784</span>,), kernel_initializer=glorot_uniform()), <span class="comment"># Xavier Initialization</span>
-    BatchNormalization(),
-    Activation(<span class="string">'relu'</span>),
-    Dense(units=<span class="number">64</span>, kernel_initializer=he_normal()), <span class="comment"># He Initialization</span>
-    BatchNormalization(),
-    Activation(<span class="string">'relu'</span>),
-    Dense(units=<span class="number">10</span>, activation=<span class="string">'softmax'</span>)
-])
-        </code>
-    </pre>
-
-    <p>🔍 <strong>Explanation of the changes:</strong></p>
+    <h3>🔍 The Solution: Normalizing Activations Within Mini-Batches</h3>
 
     <ul>
-        <li><code>from keras.initializers import glorot_uniform, he_normal</code>: Imports the Glorot uniform (Xavier) and He normal initializers.</li>
-        <li><code>kernel_initializer=glorot_uniform()</code>: Sets the weight initializer for the first <code>Dense</code> layer to Glorot uniform.</li>
-        <li><code>kernel_initializer=he_normal()</code>: Sets the weight initializer for the second <code>Dense</code> layer to He normal.</li>
-    </ul>
-
-    <h2>Part 5: Batch Normalization</h2>
-
-    <h3>What is Batch Normalization?</h3>
-
-    <ul>
-        <li>🔍 <strong>Definition:</strong> Batch normalization is a technique that normalizes the input to each layer in a neural network. It helps stabilize learning and often leads to faster convergence.</li>
-        <li>🎯 <strong>Real-Life Example:</strong> Imagine you're cooking a dish, and the recipe calls for "a pinch of salt." But sometimes the salt is coarse, and sometimes it's fine. Batch normalization is like ensuring the salt is always the same consistency, so you always get a consistent amount in each pinch.</li>
-        <li>💡 <strong>How it Works:</strong>
+        <li>📌 <strong>Definition:</strong> A technique that normalizes the activations of a layer for each mini-batch during training.</li>
+        <li>📌 <strong>How It Works:</strong>
             <ol>
-                <li>Calculates the mean and variance of the activations within a mini-batch of data.</li>
-                <li>Normalizes the activations using the calculated mean and variance.</li>
-                <li>Scales and shifts the normalized activations using learned parameters (gamma and beta).</li>
+                <li>Calculate Mean and Variance: Compute the mean (μ) and variance (σ²) of the activations for the current mini-batch.</li>
+                <li>Normalize: Normalize the activations by subtracting the mean and dividing by the square root of the variance (adding a small epsilon to avoid division by zero).
+                    <code>x_norm = (x - μ) / sqrt(σ² + ε)</code></li>
+                <li>Scale and Shift: Apply a learnable scale (γ) and shift (β) to the normalized activations.
+                    <code>y = γ * x_norm + β</code>
+                    <ul>
+                        <li><code>γ</code> (gamma): Learnable scale parameter</li>
+                        <li><code>β</code> (beta): Learnable shift parameter</li>
+                    </ul>
+                </li>
             </ol>
         </li>
+        <li>🎯 <strong>Analogy:</strong> Imagine standardizing exam scores in a class. Batch normalization is like doing that for the activations within each layer of your neural network.</li>
     </ul>
 
-    <h3>Why Use Batch Normalization?</h3>
+    <h3>💡 Benefits of Batch Normalization</h3>
 
     <ul>
-        <li>🚀 <strong>Faster Training:</strong> Batch normalization allows you to use higher learning rates without causing instability.</li>
-        <li>✨ <strong>Improved Generalization:</strong> It can act as a regularizer, reducing overfitting.</li>
-        <li>🛡️ <strong>Less Sensitivity to Initialization:</strong> Makes the network less sensitive to the initial choice of weights.</li>
-        <li>🧠 <strong>Addresses Internal Covariate Shift:</strong> This refers to the change in the distribution of network activations due to the changing parameters during training. Batch normalization reduces this shift.</li>
+        <li>📌 <strong>Faster Training:</strong> Allows for higher learning rates.</li>
+        <li>📌 <strong>Regularization:</strong> Reduces the need for dropout (sometimes).</li>
+        <li>📌 <strong>Reduces Internal Covariate Shift:</strong> Stabilizes learning.</li>
+        <li>📌 <strong>More Robust:</strong> Less sensitive to weight initialization.</li>
+        <li>📌 <strong>Noise Reduction:</strong> Reduces noise in the input data that can cause bad values with the gradient.</li>
+        <li>📌 <strong>Improved Gradient Flow:</strong> Helps in maintaining the gradients, especially in deep networks.</li>
     </ul>
 
-    <h3>Batch Normalization in the Code</h3>
-
-    <p>In the code example, <code>BatchNormalization()</code> layers are added after the <code>Dense</code> layers and before the <code>Activation</code> layers.</p>
+    <h4>🚀 Code Example (Keras - Batch Normalization)</h4>
 
     <pre>
-        <code class="language-python">
-model = keras.Sequential([
-    Dense(units=<span class="number">128</span>, input_shape=(<span class="number">784</span>,)),
-    BatchNormalization(),  <span class="comment"># Batch Normalization layer</span>
-    Activation(<span class="string">'relu'</span>),
-    Dense(units=<span class="number">64</span>),
-    BatchNormalization(),  <span class="comment"># Batch Normalization layer</span>
-    Activation(<span class="string">'relu'</span>),
-    Dense(units=<span class="number">10</span>),
-    Activation(<span class="string">'softmax'</span>)
-])
+        <code>
+<span class="keyword">import</span> <span class="variable">numpy</span> <span class="keyword">as</span> <span class="variable">np</span>
+<span class="keyword">from</span> <span class="variable">keras.models</span> <span class="keyword">import</span> <span class="variable">Sequential</span>
+<span class="keyword">from</span> <span class="variable">keras.layers</span> <span class="keyword">import</span> <span class="variable">Dense</span>, <span class="variable">BatchNormalization</span>, <span class="variable">Activation</span>
+<span class="keyword">from</span> <span class="variable">keras.optimizers</span> <span class="keyword">import</span> <span class="variable">Adam</span>
+<span class="keyword">from</span> <span class="variable">keras.utils</span> <span class="keyword">import</span> <span class="variable">to_categorical</span>
+
+<span class="comment"># 1. Data Generation (Example):</span>
+<span class="variable">x_train</span> = <span class="variable">np</span>.<span class="function">random.rand</span>(<span class="number">1000</span>, <span class="number">784</span>) <span class="comment">#1000 samples, each with 784 features</span>
+<span class="variable">y_train</span> = <span class="variable">to_categorical</span>(<span class="variable">np</span>.<span class="function">random.randint</span>(<span class="number">0</span>, <span class="number">10</span>, <span class="keyword">size</span>=(<span class="number">1000</span>,)), <span class="keyword">num_classes</span>=<span class="number">10</span>) <span class="comment"># One-hot encode random labels</span>
+
+
+<span class="comment"># 2. Model Definition with Batch Normalization:</span>
+<span class="variable">model</span> = <span class="variable">Sequential</span>()
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">Dense</span>(<span class="number">128</span>, <span class="keyword">input_shape</span>=(<span class="number">784</span>,)))
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">BatchNormalization</span>())
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">Activation</span>(<span class="string">'relu'</span>))
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">Dense</span>(<span class="number">64</span>))
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">BatchNormalization</span>())
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">Activation</span>(<span class="string">'relu'</span>))
+<span class="variable">model</span>.<span class="function">add</span>(<span class="variable">Dense</span>(<span class="number">10</span>, <span class="keyword">activation</span>=<span class="string">'softmax'</span>))
+
+<span class="comment"># 3. Model Compilation:</span>
+<span class="variable">model</span>.<span class="function">compile</span>(<span class="keyword">optimizer</span>=<span class="string">'Adam'</span>, <span class="keyword">loss</span>=<span class="string">'categorical_crossentropy'</span>, <span class="keyword">metrics</span>=[<span class="string">'accuracy'</span>])
+
+<span class="comment"># 4. Model Summary</span>
+<span class="variable">model</span>.<span class="function">summary</span>()
+
+<span class="comment"># 5. Training the Model:</span>
+<span class="variable">model</span>.<span class="function">fit</span>(<span class="variable">x_train</span>, <span class="variable">y_train</span>, <span class="keyword">epochs</span>=<span class="number">5</span>, <span class="keyword">batch_size</span>=<span class="number">32</span>)
         </code>
     </pre>
 
-    <h3>Key Points about Batch Normalization</h3>
-
     <ul>
-        <li>📝 It's typically applied <em>after</em> the linear transformation (Dense layer) and <em>before</em> the activation function.</li>
-        <li>💡 During inference (when you're using the trained model), batch normalization uses the <em>moving averages</em> of the mean and variance calculated during training, rather than calculating them from the current batch. This is important for consistent predictions.</li>
-        <li>🎯 The <code>gamma</code> and <code>beta</code> parameters in the batch normalization layer allow the network to learn the optimal scale and shift for the normalized activations. This gives the network flexibility to adapt to the data distribution.</li>
+        <li>📌 <strong>Explanation:</strong>
+            <ul>
+                <li><code>BatchNormalization()</code>: This layer normalizes the activations of the previous layer. It learns the <code>γ</code> (scale) and <code>β</code> (shift) parameters during training.</li>
+                <li>Placement: It's common to place <code>BatchNormalization</code> <em>after</em> a fully connected (<code>Dense</code>) or convolutional layer and <em>before</em> the activation function.</li>
+            </ul>
+        </li>
     </ul>
 
-    <h2>Part 6: Activation Functions, Optimizers</h2>
+    <h2>📝 Summary Table: Weight Initialization vs. Batch Normalization</h2>
 
-    <p>The presenter mentions these topics briefly, so let's summarize:</p>
-
-    <ul>
-        <li>🚀 <strong>Activation Functions:</strong> Introduce non-linearity into the neural network, allowing it to learn complex patterns. Examples: ReLU, sigmoid, tanh, softmax. ReLU is often preferred for hidden layers.</li>
-        <li>✨ <strong>Optimizers:</strong> Algorithms that update the weights of the network during training to minimize the loss function. Example: Adam (a popular and effective optimizer).</li>
-    </ul>
-
-    <h2>Summary of Key Concepts</h2>
-
-    <ul>
-        <li>🧠 <strong>Weight Initialization:</strong> Properly setting the initial weights is crucial for stable and efficient training. Techniques like Xavier/Glorot and He initialization are designed to maintain variance and prevent vanishing/exploding gradients. Avoid zero initialization.</li>
-        <li>🧠 <strong>Batch Normalization:</strong> Normalizes the input to each layer, leading to faster training, improved generalization, and less sensitivity to initialization. It helps address the internal covariate shift problem.</li>
-        <li>🧠 <strong>Activation Functions:</strong> Introduce non-linearity.</li>
-        <li>🧠 <strong>Optimizers:</strong> Adjust network weights to minimize the loss function.</li>
-    </ul>
-
-    <p>🚀 By understanding these concepts, you'll be well-equipped to build and train more effective neural networks. Remember to experiment with different initialization techniques and optimizers to find what works best for your specific problem. Good luck!✨</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Weight Initialization</th>
+                <th>Batch Normalization</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Problem Addressed</strong></td>
+                <td>Initial weight values affecting training</td>
+                <td>Shifting distributions during training</td>
+            </tr>
+            <tr>
+                <td><strong>When to Apply</strong></td>
+                <td>Before training begins</td>
+                <td>During mini-batch training</td>
+            </tr>
+            <tr>
+                <td><strong>Primary Goal</strong></td>
+                <td>Set up weights for good gradient flow</td>
+                <td>Stabilize activations and accelerate training</td>
+            </tr>
+            <tr>
+                <td><strong>Common Techniques</strong></td>
+                <td>Xavier, He</td>
+                <td>Normalizing and scaling within mini-batches</td>
+            </tr>
+        </tbody>
+    </table>
 
 </body>
 </html>

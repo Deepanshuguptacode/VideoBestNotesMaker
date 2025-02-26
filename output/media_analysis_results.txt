@@ -1,2 +1,0 @@
-Analysis for chunk_000.mp4:
-Here's a summary of the video.  A man, Prince Katiyar, conducts a live online quiz on deep learning.  He starts by reminding viewers they can find the videos for this session and others on the iNeuron Tech Hindi YouTube channel.  He then reviews how to find the relevant section on the iNeuron dashboard.  He answers questions from the viewers in the chat.  There's some discussion about the best way to answer questions and the process for getting a certificate upon completion of the course.

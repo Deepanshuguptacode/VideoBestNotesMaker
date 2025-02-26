@@ -4,29 +4,46 @@ const fs = require("fs");
 const videoNotesModel = require("../models/videoNotesModel");
 const sharedState = require("../utils/sharedState");
 
-const analysisPath = path.join(__dirname, "..", "..");
-console.log(analysisPath);
-const analysisFiles = fs.readdirSync(analysisPath).filter(file => file.startsWith("analysis"));
+// const analysisPath = path.join(__dirname, "..", "..");
+// console.log(analysisPath);
 
-console.log(analysisFiles);
+// const analysisFiles = fs.readdirSync(analysisPath).filter(file =>file.startsWith("analysis"));
+// console.log(analysisFiles);
 
-// Read all analysis .txt files and merge their contents into a single string
-let allResultsString = "";
-let videoNotesId = "";
+// const analysisFilesPath = analysisFiles.map(file => path.join(analysisPath, file));
+// console.log(analysisFilesPath);
+
+// // Read all analysis .txt files and merge their contents into a single string
+// let allResultsString = "";
+// let videoNotesId = "";
 
 const storeResultAndDelete = async (req, res, next) => {
     try {
-        analysisFiles.forEach((file) => {
-            const analysisData = fs.readFileSync(path.join(analysisPath, file), "utf8");
-            fs.unlinkSync(path.join(analysisPath, file));
+
+        const analysisPath = path.join(__dirname, "..", "..");
+        console.log(analysisPath);
+
+        const analysisFiles = fs.readdirSync(analysisPath).filter(file =>file.startsWith("analysis"));
+        console.log(analysisFiles);
+
+        const analysisFilesPath = analysisFiles.map(file => path.join(analysisPath, file));
+        console.log(analysisFilesPath);
+
+        // Read all analysis .txt files and merge their contents into a single string
+        let allResultsString = "";
+        let videoNotesId = "";
+
+        analysisFilesPath.forEach((file) => {
+            const analysisData = fs.readFileSync(file, "utf8");
+            fs.unlinkSync(file);
             console.log(`Deleted analysis file: ${file}`);
             allResultsString += analysisData;
         });
 
         // If no video notes were found, throw an error.
-        if (!allResultsString.trim()) {
-            throw new Error("No video notes found to store.");
-        }
+        // if (!allResultsString.trim()) {
+        //     throw new Error("No video notes found to store.");
+        // }
 
         const videoNote = new videoNotesModel({
             videoNotes: allResultsString
